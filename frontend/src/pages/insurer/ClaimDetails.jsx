@@ -160,7 +160,7 @@ const ClaimDetails = () => {
                 <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
                   <span className="text-sm font-medium text-gray-700">Attached Document</span>
                   <a
-                    href={getDocumentUrl(claim._id)}
+                    href={claim.documentUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:text-primary-dark text-sm font-medium"
@@ -171,7 +171,7 @@ const ClaimDetails = () => {
                 <div className="p-4 bg-white">
                   {claim.documentUrl.toLowerCase().endsWith('.pdf') ? (
                     <iframe
-                      src={getDocumentUrl(claim._id)}
+                      src={claim.documentUrl}
                       className="w-full h-[600px] border-0"
                       title="Document Preview"
                     />

@@ -9,10 +9,11 @@
     "lint": "next lint",
     "socket": "node -r @babel/register src/socketServer.js",
     "dev:all": "concurrently \"npm run dev\" \"npm run socket\"",
-    "postinstall": "npm i @tailwindcss/oxide-linux-x64-gnu @tailwindcss/oxide-linux-x64-musl --no-save || true"
+    "postinstall": "npm i @tailwindcss/oxide-linux-x64-gnu @tailwindcss/oxide-linux-x64-musl autoprefixer --no-save || true"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
+    "autoprefixer": "^10.4.17",
     "axios": "^1.8.3",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",

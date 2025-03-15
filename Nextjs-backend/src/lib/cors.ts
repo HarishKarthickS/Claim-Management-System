@@ -1,6 +1,3 @@
-<<<<<<< HEAD
- 
-=======
 import { NextResponse } from 'next/server';
 
 /**
@@ -25,5 +22,4 @@ export function applyCorsHeaders(response: NextResponse): NextResponse {
 export function corsOptionsResponse(): NextResponse {
   const response = new NextResponse(null, { status: 200 });
   return applyCorsHeaders(response);
-} 
->>>>>>> 30f2ea48ac69ba7ec117be8d42a37812d542ee83
+}

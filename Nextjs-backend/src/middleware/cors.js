@@ -1,6 +1,3 @@
-<<<<<<< HEAD
- 
-=======
 import NextCors from 'next-cors';
 
 export function middleware(handler) {
@@ -23,5 +20,4 @@ export function middleware(handler) {
   };
 }
 
-export default middleware; 
->>>>>>> 30f2ea48ac69ba7ec117be8d42a37812d542ee83
+export default middleware;

@@ -2,9 +2,14 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
-// Using relative URLs to work with the Vite proxy
+// In development, use relative URLs to leverage Vite's proxy
+// In production, use the absolute URL from environment variable
+const isDevelopment = import.meta.env.MODE === 'development';
+const apiUrl = isDevelopment ? '' : (import.meta.env.VITE_API_URL || '');
+
+// Using environment variable or relative URLs to work with the Vite proxy
 const api = axios.create({
-  baseURL: '',  // Empty to use relative URLs
+  baseURL: apiUrl,  // Use API URL from environment
   withCredentials: true
 });
 

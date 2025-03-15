@@ -1,0 +1,46 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # 2. Set up Google Cloud SDK
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: centering-badge-452020-n2
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      # 3. Authenticate Docker for Artifact Registry
+      - name: Configure Docker Authentication for Artifact Registry
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      # 4. Build and push NextJS backend image
+      - name: Build and Push NextJS Backend Image
+        working-directory: Nextjs-backend
+        run: |
+          docker build -t us-central1-docker.pkg.dev/centering-badge-452020-n2/my-repo/nextjs-backend .
+          docker push us-central1-docker.pkg.dev/centering-badge-452020-n2/my-repo/nextjs-backend
+
+      # 5. Deploy NextJS backend to Cloud Run
+      - name: Deploy NextJS Backend to Cloud Run
+        run: |
+          gcloud run deploy nextjs-backend-service \
+            --image=us-central1-docker.pkg.dev/centering-badge-452020-n2/my-repo/nextjs-backend \
+            --platform=managed \
+            --region=us-central1 \
+            --allow-unauthenticated \
+            --set-env-vars "MONGODB_URI=${{ secrets.MONGODB_URI }},JWT_SECRET=${{ secrets.JWT_SECRET }},SUPABASE_URL=${{ secrets.SUPABASE_URL }},SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }},SUPABASE_STORAGE_BUCKET=${{ secrets.SUPABASE_STORAGE_BUCKET }},PORT=3000,FRONTEND_URL=${{ secrets.FRONTEND_URL }},NODE_ENV=production" \
+            --port=3000 

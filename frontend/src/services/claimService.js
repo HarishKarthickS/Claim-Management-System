@@ -1,8 +1,13 @@
 import axios from 'axios';
 
+// In development, use relative URLs to leverage Vite's proxy
+// In production, use the absolute URL from environment variable
+const isDevelopment = import.meta.env.MODE === 'development';
+const apiUrl = isDevelopment ? '' : (import.meta.env.VITE_API_URL || '');
+
 // Initialize Axios instance with default configuration
 const api = axios.create({
-  baseURL: '/api',  // Using relative URL for proxy
+  baseURL: `${apiUrl}/api`,  // Using environment variable or relative URL
   headers: {
     'Content-Type': 'application/json',
   },
@@ -85,7 +90,7 @@ const isCacheValid = (cacheKey, id = null) => {
 };
 
 // Get all claims (filtered by user role)
-const getClaims = async (role, _filters = {}, forceRefresh = false) => {
+const getClaims = async (role, forceRefresh = false) => {
   try {
     // Check if we have cached data and it's not expired, unless force refresh is requested
     if (!forceRefresh && isCacheValid('claims') && dataCache.claims.data) {
@@ -215,8 +220,8 @@ const createClaim = async (claimData, file) => {
       console.log(`FormData contains: ${pair[0]}: ${pair[1]}`);
     }
 
-    // Make POST request with FormData
-    const response = await axios.post(`/api/claims`, formData, {
+    // Use the same apiUrl logic for consistency
+    const response = await axios.post(`${apiUrl}/api/claims`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         // Let the browser set the content-type with boundary parameter

@@ -91,6 +91,26 @@ npm run dev
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:3000
 
+## 🚀 Deployment
+
+### Frontend Deployment
+The frontend is configured to work in both development and production environments:
+
+1. In development, the Vite development server proxies API requests to the backend.
+2. For production deployment, the application uses environment variables to connect to the backend API.
+
+Configuration files:
+- `.env.production` - Contains production API URL
+- `vite.config.js` - Configures the development proxy
+
+When deploying:
+1. Set the `VITE_API_URL` environment variable to your backend API URL
+2. Build the frontend using `npm run build`
+3. Deploy the `dist` directory to your hosting provider
+
+### Backend Deployment
+The backend is deployed separately from the frontend. Configure CORS settings to allow requests from your frontend domain.
+
 ## 📱 Screenshots
 
 [Include screenshots of key features here]

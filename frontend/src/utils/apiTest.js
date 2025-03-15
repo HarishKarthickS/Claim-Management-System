@@ -5,6 +5,11 @@
 
 import axios from 'axios';
 
+// In development, use relative URLs to leverage Vite's proxy
+// In production, use the absolute URL from environment variable
+const isDevelopment = import.meta.env.MODE === 'development';
+const apiUrl = isDevelopment ? '' : (import.meta.env.VITE_API_URL || '');
+
 /**
  * Tests the connection to the backend API
  * @returns {Promise<{success: boolean, message: string}>} Status of the connection test
@@ -12,7 +17,7 @@ import axios from 'axios';
 export const testBackendConnection = async () => {
   try {
     // Try to connect to the API health endpoint
-    const response = await axios.get('/api/health', {
+    const response = await axios.get(`${apiUrl}/api/health`, {
       timeout: 5000, // 5 second timeout
     });
     
@@ -53,7 +58,7 @@ export const testAuthentication = async (credentials = null) => {
     if (existingToken) {
       try {
         // Try to access a protected endpoint with existing token
-        const tokenCheckResponse = await axios.get('/api/auth/session', {
+        const tokenCheckResponse = await axios.get(`${apiUrl}/api/auth/session`, {
           headers: {
             'Authorization': `Bearer ${existingToken}`
           }
@@ -82,7 +87,7 @@ export const testAuthentication = async (credentials = null) => {
     }
     
     // Try the login endpoint
-    const response = await axios.post('/api/auth/login', credentials, {
+    const response = await axios.post(`${apiUrl}/api/auth/login`, credentials, {
       withCredentials: true,
       headers: {
         'Content-Type': 'application/json'
@@ -95,7 +100,7 @@ export const testAuthentication = async (credentials = null) => {
       
       // If we have a token, try to access a protected endpoint with it
       try {
-        const tokenCheckResponse = await axios.get('/api/claims', {
+        const tokenCheckResponse = await axios.get(`${apiUrl}/api/claims`, {
           headers: {
             'Authorization': `Bearer ${response.data.token}`
           }

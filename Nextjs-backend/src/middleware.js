@@ -5,16 +5,19 @@ export function middleware(request) {
   // Get the response
   const response = NextResponse.next();
   
-  // Add CORS headers
-  // For production, replace '*' with specific origins like:
-  const allowedOrigins = ['http://localhost:5173','https://claim-management-system-rho.vercel.app/'];
+  // Add CORS headers using specific allowed origins
+  const allowedOrigins = ['http://localhost:5173', 'https://claim-management-system-rho.vercel.app'];
   const origin = request.headers.get('origin');
-  if (allowedOrigins.includes(origin)) {
+  
+  // Set CORS headers conditionally based on origin
+  if (origin && allowedOrigins.includes(origin)) {
     response.headers.set('Access-Control-Allow-Origin', origin);
+  } else {
+    // For dev/testing purposes, you could use a wildcard
+    // Comment this out for production if you want strict origin checking
+    response.headers.set('Access-Control-Allow-Origin', '*');
   }
   
-  // For development/testing, allow all origins:
-  response.headers.set('Access-Control-Allow-Origin', '*');
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   

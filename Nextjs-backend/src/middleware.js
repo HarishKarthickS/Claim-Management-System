@@ -1,6 +1,3 @@
-<<<<<<< HEAD
- 
-=======
 import { NextResponse } from 'next/server';
 
 // This function can be marked `async` if using `await` inside
@@ -9,6 +6,14 @@ export function middleware(request) {
   const response = NextResponse.next();
   
   // Add CORS headers
+  // For production, replace '*' with specific origins like:
+  const allowedOrigins = ['http://localhost:5173','https://claim-management-system-rho.vercel.app/'];
+  const origin = request.headers.get('origin');
+  if (allowedOrigins.includes(origin)) {
+    response.headers.set('Access-Control-Allow-Origin', origin);
+  }
+  
+  // For development/testing, allow all origins:
   response.headers.set('Access-Control-Allow-Origin', '*');
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -23,5 +28,4 @@ export const config = {
   // - _next/image (image optimization files)
   // - favicon.ico (favicon file)
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
-}; 
->>>>>>> b473fd381690a162d527bc35813dece05246af93
+};

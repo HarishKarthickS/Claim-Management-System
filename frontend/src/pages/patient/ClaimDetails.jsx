@@ -117,12 +117,12 @@ const ClaimDetails = () => {
             <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
               <span className="text-sm font-medium text-gray-700">Attached Document</span>
               <a
-                href={getDocumentUrl(claim._id)}
+                href={claim.documentUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline text-sm font-medium"
                 onClick={(e) => {
-                  if (!getDocumentUrl(claim._id)) {
+                  if (!claim.documentUrl) {
                     e.preventDefault();
                     toast.error('Could not load document: Authentication required');
                   }
@@ -134,13 +134,13 @@ const ClaimDetails = () => {
             <div className="p-4 bg-white">
               {claim.documentUrl.toLowerCase().endsWith('.pdf') ? (
                 <div className="h-[600px] relative">
-                  {!getDocumentUrl(claim._id) ? (
+                  {!claim.documentUrl ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-500">
                       <p>Authentication required to view document</p>
                     </div>
                   ) : (
                     <iframe
-                      src={getDocumentUrl(claim._id)}
+                      src={claim.documentUrl}
                       className="w-full h-full border-0"
                       title="Document Preview"
                       onError={(e) => {

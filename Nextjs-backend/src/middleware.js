@@ -5,17 +5,9 @@ export function middleware(request) {
   // Handle preflight OPTIONS request
   if (request.method === 'OPTIONS') {
     const response = new NextResponse(null, { status: 204 });
-    const allowedOrigins = ['http://localhost:5173', 'https://claim-management-system-rho.vercel.app'];
-    const origin = request.headers.get('origin');
-    
-    if (origin && allowedOrigins.includes(origin)) {
-      response.headers.set('Access-Control-Allow-Origin', origin);
-    } else {
-      response.headers.set('Access-Control-Allow-Origin', '*');
-    }
-    
+    response.headers.set('Access-Control-Allow-Origin', '*');
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     response.headers.set('Access-Control-Max-Age', '86400'); // 24 hours
     return response;
   }
@@ -23,21 +15,9 @@ export function middleware(request) {
   // Handle regular requests
   const response = NextResponse.next();
   
-  // Add CORS headers using specific allowed origins
-  const allowedOrigins = ['http://localhost:5173', 'https://claim-management-system-rho.vercel.app'];
-  const origin = request.headers.get('origin');
-  
-  // Set CORS headers conditionally based on origin
-  if (origin && allowedOrigins.includes(origin)) {
-    response.headers.set('Access-Control-Allow-Origin', origin);
-  } else {
-    // For dev/testing purposes, you could use a wildcard
-    // Comment this out for production if you want strict origin checking
-    response.headers.set('Access-Control-Allow-Origin', '*');
-  }
-  
+  response.headers.set('Access-Control-Allow-Origin', '*');
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   
   return response;
 }

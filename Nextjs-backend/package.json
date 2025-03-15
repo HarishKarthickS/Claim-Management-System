@@ -3,13 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "socket": "node -r @babel/register src/socketServer.js",
-    "dev:all": "concurrently \"npm run dev\" \"npm run socket\"",
-    "postinstall": "npm i @tailwindcss/oxide-linux-x64-gnu @tailwindcss/oxide-linux-x64-musl autoprefixer --no-save || true"
+    "dev:all": "concurrently \"npm run dev\" \"npm run socket\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
@@ -31,22 +30,10 @@
   },
   "devDependencies": {
     "@babel/register": "^7.23.7",
-    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "concurrently": "^8.2.2",
-    "tailwindcss": "^4",
     "typescript": "^5"
-  },
-  "optionalDependencies": {
-    "@tailwindcss/oxide-darwin-arm64": "^0.0.4",
-    "@tailwindcss/oxide-darwin-x64": "^0.0.4",
-    "@tailwindcss/oxide-linux-arm64-gnu": "^0.0.4",
-    "@tailwindcss/oxide-linux-arm64-musl": "^0.0.4",
-    "@tailwindcss/oxide-linux-x64-gnu": "^0.0.4",
-    "@tailwindcss/oxide-linux-x64-musl": "^0.0.4",
-    "@tailwindcss/oxide-win32-arm64-msvc": "^0.0.4",
-    "@tailwindcss/oxide-win32-x64-msvc": "^0.0.4"
   }
 }

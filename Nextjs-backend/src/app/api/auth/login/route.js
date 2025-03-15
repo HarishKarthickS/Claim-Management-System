@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import connectDB from '@/lib/utils/db';
 import User from '@/lib/models/User';
 import { JWT_SECRET } from '@/lib/middleware/auth';
+import { applyCorsHeaders, corsOptionsResponse } from '@/lib/cors';
 
 export async function POST(request) {
   try {
@@ -16,10 +17,11 @@ export async function POST(request) {
     const user = await User.findOne({ email });
     if (!user) {
       console.log('User not found:', email);
-      return NextResponse.json(
+      const response = NextResponse.json(
         { message: 'Invalid credentials' },
         { status: 401 }
       );
+      return applyCorsHeaders(response);
     }
 
     // Check password
@@ -27,17 +29,19 @@ export async function POST(request) {
       const isMatch = await user.comparePassword(password);
       if (!isMatch) {
         console.log('Password mismatch for user:', email);
-        return NextResponse.json(
+        const response = NextResponse.json(
           { message: 'Invalid credentials' },
           { status: 401 }
         );
+        return applyCorsHeaders(response);
       }
     } catch (passwordError) {
       console.error('Password comparison error:', passwordError);
-      return NextResponse.json(
+      const response = NextResponse.json(
         { message: 'Error verifying credentials' },
         { status: 500 }
       );
+      return applyCorsHeaders(response);
     }
 
     // Generate token
@@ -47,7 +51,7 @@ export async function POST(request) {
       { expiresIn: '24h' }
     );
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       token,
       user: {
         id: user._id,
@@ -56,11 +60,21 @@ export async function POST(request) {
         role: user.role
       }
     });
+    
+    // Apply CORS headers to the success response
+    return applyCorsHeaders(response);
   } catch (error) {
     console.error('Login route error:', error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { message: error.message || 'Server error during login' },
       { status: 500 }
     );
+    return applyCorsHeaders(response);
   }
+}
+
+// Add OPTIONS handler for CORS preflight requests
+export async function OPTIONS() {
+  // Use the corsOptionsResponse function from our CORS library
+  return corsOptionsResponse();
 } 

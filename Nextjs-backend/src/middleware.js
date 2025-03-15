@@ -2,7 +2,25 @@ import { NextResponse } from 'next/server';
 
 // This function can be marked `async` if using `await` inside
 export function middleware(request) {
-  // Get the response
+  // Handle preflight OPTIONS request
+  if (request.method === 'OPTIONS') {
+    const response = new NextResponse(null, { status: 204 });
+    const allowedOrigins = ['http://localhost:5173', 'https://claim-management-system-rho.vercel.app'];
+    const origin = request.headers.get('origin');
+    
+    if (origin && allowedOrigins.includes(origin)) {
+      response.headers.set('Access-Control-Allow-Origin', origin);
+    } else {
+      response.headers.set('Access-Control-Allow-Origin', '*');
+    }
+    
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    response.headers.set('Access-Control-Max-Age', '86400'); // 24 hours
+    return response;
+  }
+
+  // Handle regular requests
   const response = NextResponse.next();
   
   // Add CORS headers using specific allowed origins
@@ -19,7 +37,7 @@ export function middleware(request) {
   }
   
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
   
   return response;
 }

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Test</title>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #status {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .connecting {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        #events {
+            border: 1px solid #ddd;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .event-item {
+            margin-bottom: 8px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0069d9;
+        }
+        input {
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Socket.IO Test Client</h1>
+    
+    <div id="status" class="connecting">Connecting to Socket.IO server...</div>
+    
+    <div>
+        <h3>Authentication</h3>
+        <input type="text" id="userId" placeholder="User ID" value="test-user-123">
+        <input type="text" id="userRole" placeholder="User Role" value="patient">
+        <button id="authButton">Authenticate</button>
+    </div>
+    
+    <h3>Events</h3>
+    <div id="events"></div>
+    
+    <div>
+        <h3>Send Test Event</h3>
+        <input type="text" id="eventName" placeholder="Event Name" value="testEvent">
+        <input type="text" id="eventData" placeholder="Event Data" value='{"message":"Hello from browser"}'>
+        <button id="sendButton">Send Event</button>
+    </div>
+    
+    <script>
+        // DOM elements
+        const statusEl = document.getElementById('status');
+        const eventsEl = document.getElementById('events');
+        const authButton = document.getElementById('authButton');
+        const sendButton = document.getElementById('sendButton');
+        const userIdInput = document.getElementById('userId');
+        const userRoleInput = document.getElementById('userRole');
+        const eventNameInput = document.getElementById('eventName');
+        const eventDataInput = document.getElementById('eventData');
+        
+        // Connect to Socket.IO server
+        const socket = io('http://localhost:3002', {
+            transports: ['websocket', 'polling']
+        });
+        
+        // Add event to the events list
+        function addEvent(name, data) {
+            const item = document.createElement('div');
+            item.className = 'event-item';
+            item.innerHTML = `<strong>${name}</strong>: ${JSON.stringify(data)}`;
+            eventsEl.appendChild(item);
+            eventsEl.scrollTop = eventsEl.scrollHeight;
+        }
+        
+        // Update connection status
+        function updateStatus(status, message) {
+            statusEl.className = status;
+            statusEl.textContent = message;
+        }
+        
+        // Socket.IO event handlers
+        socket.on('connect', () => {
+            updateStatus('connected', `Connected to Socket.IO server (ID: ${socket.id})`);
+            addEvent('connect', { id: socket.id });
+        });
+        
+        socket.on('disconnect', (reason) => {
+            updateStatus('disconnected', `Disconnected: ${reason}`);
+            addEvent('disconnect', { reason });
+        });
+        
+        socket.on('connect_error', (error) => {
+            updateStatus('disconnected', `Connection error: ${error.message}`);
+            addEvent('connect_error', { message: error.message });
+        });
+        
+        socket.on('welcome', (data) => {
+            addEvent('welcome', data);
+        });
+        
+        socket.on('authenticated', (data) => {
+            addEvent('authenticated', data);
+        });
+        
+        socket.on('testEvent', (data) => {
+            addEvent('testEvent', data);
+        });
+        
+        socket.on('claimCreated', (data) => {
+            addEvent('claimCreated', data);
+        });
+        
+        socket.on('claimUpdated', (data) => {
+            addEvent('claimUpdated', data);
+        });
+        
+        socket.on('claimDeleted', (data) => {
+            addEvent('claimDeleted', data);
+        });
+        
+        // Button event handlers
+        authButton.addEventListener('click', () => {
+            const userId = userIdInput.value.trim();
+            const userRole = userRoleInput.value.trim();
+            
+            if (userId && userRole) {
+                socket.emit('authenticate', { id: userId, role: userRole });
+                addEvent('authenticate', { id: userId, role: userRole });
+            } else {
+                alert('Please enter both User ID and Role');
+            }
+        });
+        
+        sendButton.addEventListener('click', () => {
+            const eventName = eventNameInput.value.trim();
+            const eventDataStr = eventDataInput.value.trim();
+            
+            if (eventName) {
+                try {
+                    const eventData = eventDataStr ? JSON.parse(eventDataStr) : {};
+                    socket.emit(eventName, eventData);
+                    addEvent(`emit:${eventName}`, eventData);
+                } catch (error) {
+                    alert('Invalid JSON data: ' + error.message);
+                }
+            } else {
+                alert('Please enter an event name');
+            }
+        });
+    </script>
+</body>
+</html> 
